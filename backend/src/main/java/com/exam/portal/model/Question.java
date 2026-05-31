@@ -1,0 +1,82 @@
+package com.exam.portal.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "questions")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Question {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "subject_id", nullable = false)
+    private Subject subject;
+
+    @NotBlank(message = "Question text is required")
+    @Column(name = "question_text", columnDefinition = "TEXT", nullable = false)
+    private String questionText;
+
+    @NotBlank(message = "Option 1 is required")
+    @Column(length = 500, nullable = false)
+    private String option1;
+
+    @NotBlank(message = "Option 2 is required")
+    @Column(length = 500, nullable = false)
+    private String option2;
+
+    @NotBlank(message = "Option 3 is required")
+    @Column(length = 500, nullable = false)
+    private String option3;
+
+    @NotBlank(message = "Option 4 is required")
+    @Column(length = 500, nullable = false)
+    private String option4;
+
+    @Min(value = 1, message = "Correct option must be between 1 and 4")
+    @Max(value = 4, message = "Correct option must be between 1 and 4")
+    @Column(name = "correct_option", nullable = false)
+    private Integer correctOption;
+
+    @Min(value = 1, message = "Marks must be at least 1")
+    @Column(nullable = false)
+    private Integer marks = 1;
+
+    @Column(length = 20)
+    private String difficulty = "MEDIUM"; // EASY, MEDIUM, HARD
+
+    @Column(name = "is_active")
+    private Boolean isActive = true;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    public String getOptionByNumber(Integer optionNumber) {
+        return switch (optionNumber) {
+            case 1 -> option1;
+            case 2 -> option2;
+            case 3 -> option3;
+            case 4 -> option4;
+            default -> "";
+        };
+    }
+}
