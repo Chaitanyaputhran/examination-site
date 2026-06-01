@@ -50,6 +50,7 @@ public class AuthService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setIsActive(true);
+        user.setLastLogin(java.time.LocalDateTime.now());
 
         user = userRepository.save(user);
 
@@ -68,6 +69,10 @@ public class AuthService {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), request.getPassword())
             );
+
+            // Update last login timestamp
+            user.setLastLogin(java.time.LocalDateTime.now());
+            userRepository.save(user);
 
             String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
 

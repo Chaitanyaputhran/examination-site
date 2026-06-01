@@ -42,7 +42,7 @@ public class User {
 
     @NotBlank(message = "Role is required")
     @Column(nullable = false, length = 20)
-    private String role; // ADMIN, STUDENT
+    private String role; 
 
     @Column(name = "first_name", length = 50)
     private String firstName;
@@ -52,6 +52,9 @@ public class User {
 
     @Column(name = "is_active")
     private Boolean isActive = true;
+
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

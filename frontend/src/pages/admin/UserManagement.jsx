@@ -36,6 +36,26 @@ function UserManagement() {
     }
   };
 
+  const handleAdd = async (userData) => {
+    try {
+      await api.post('/admin/users', userData);
+      toast.success('User added successfully');
+      loadUsers();
+    } catch (error) {
+      toast.error(error.response?.data || 'Failed to add user');
+    }
+  };
+
+  const handleEdit = async (id, userData) => {
+    try {
+      await api.put(`/admin/users/${id}`, userData);
+      toast.success('User updated successfully');
+      loadUsers();
+    } catch (error) {
+      toast.error(error.response?.data || 'Failed to update user');
+    }
+  };
+
   if (loading) return <Layout role="ADMIN"><div>Loading...</div></Layout>;
 
   return (
@@ -45,6 +65,8 @@ function UserManagement() {
         roleFilter={roleFilter}
         onRoleFilterChange={setRoleFilter}
         onDelete={handleDelete}
+        onAdd={handleAdd}
+        onEdit={handleEdit}
       />
     </Layout>
   );

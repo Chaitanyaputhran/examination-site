@@ -1,6 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 function AvailableTestsComponent({ tests, completedTestIds, onStartTest }) {
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedTest, setSelectedTest] = useState(null);
+
+  const handleStartClick = (test) => {
+    setSelectedTest(test);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmStart = () => {
+    if (selectedTest) {
+      onStartTest(selectedTest.id);
+      setShowConfirmModal(false);
+      setSelectedTest(null);
+    }
+  };
+
+  const handleCancelStart = () => {
+    setShowConfirmModal(false);
+    setSelectedTest(null);
+  };
+
   return (
     <div className="px-4 py-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Available Tests</h1>
@@ -70,7 +91,7 @@ function AvailableTestsComponent({ tests, completedTestIds, onStartTest }) {
                   </div>
                 ) : (
                   <button
-                    onClick={() => onStartTest(test.id)}
+                    onClick={() => handleStartClick(test)}
                     className="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200"
                   >
                     Start Test
@@ -92,6 +113,63 @@ function AvailableTestsComponent({ tests, completedTestIds, onStartTest }) {
           <li>• Test will auto-submit when time expires</li>
         </ul>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && selectedTest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                Start Test?
+              </h2>
+              <p className="text-gray-600 mb-4">
+                You are about to start: <span className="font-semibold text-gray-800">{selectedTest.title}</span>
+              </p>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Duration:</span>
+                <span className="font-semibold text-gray-800">{selectedTest.durationMinutes} minutes</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Total Marks:</span>
+                <span className="font-semibold text-gray-800">{selectedTest.totalMarks}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Questions:</span>
+                <span className="font-semibold text-gray-800">{selectedTest.questionCount ?? 0}</span>
+              </div>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
+              <p className="text-sm text-yellow-800 font-medium">
+                ⚠️ Once you start, the timer will begin immediately and cannot be paused!
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleCancelStart}
+                className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmStart}
+                className="flex-1 px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+              >
+                Yes, Start Test
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

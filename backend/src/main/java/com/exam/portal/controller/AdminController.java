@@ -1,7 +1,9 @@
 package com.exam.portal.controller;
 
 import com.exam.portal.dto.CreateTestRequest;
+import com.exam.portal.dto.CreateUserRequest;
 import com.exam.portal.dto.QuestionDTO;
+import com.exam.portal.dto.UpdateUserRequest;
 import com.exam.portal.model.*;
 import com.exam.portal.service.*;
 import jakarta.validation.Valid;
@@ -17,7 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
-@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
+@CrossOrigin(originPatterns = {"http://localhost:*"})
 public class AdminController {
 
     @Autowired
@@ -55,10 +57,19 @@ public class AdminController {
         return ResponseEntity.ok(userService.getUsersByRole(role));
     }
 
-    @PutMapping("/users/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User user) {
+    @PostMapping("/users")
+    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest request) {
         try {
-            return ResponseEntity.ok(userService.updateUser(id, user));
+            return ResponseEntity.ok(userService.createUserByAdmin(request));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest request) {
+        try {
+            return ResponseEntity.ok(userService.updateUserByAdmin(id, request));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

@@ -1,7 +1,5 @@
 package com.exam.portal.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -34,9 +32,8 @@ public class Test {
     private String description;
 
     @NotNull(message = "Subject is required")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "subject_id", nullable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Subject subject;
 
     @Min(value = 1, message = "Duration must be at least 1 minute")
@@ -51,16 +48,14 @@ public class Test {
     @Column(name = "passing_marks", nullable = false)
     private Integer passingMarks;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User createdBy;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     @CreationTimestamp
