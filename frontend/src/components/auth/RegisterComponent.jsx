@@ -1,7 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+const checks = [
+  { label: 'At least 8 characters',       test: v => v.length >= 8 },
+  { label: 'One uppercase letter (A–Z)',   test: v => /[A-Z]/.test(v) },
+  { label: 'One lowercase letter (a–z)',   test: v => /[a-z]/.test(v) },
+  { label: 'One number (0–9)',             test: v => /[0-9]/.test(v) },
+  { label: 'One special character',        test: v => /[^A-Za-z0-9]/.test(v) },
+  { label: 'No spaces',                    test: v => !/\s/.test(v) },
+];
+
 function RegisterComponent({ formData, loading, onSubmit, onChange }) {
+  const password = formData.password;
+  const showChecklist = password.length > 0;
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 py-8">
       <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
@@ -51,8 +63,20 @@ function RegisterComponent({ formData, loading, onSubmit, onChange }) {
               onChange={onChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
-              minLength={6}
             />
+            {showChecklist && (
+              <ul className="mt-2 space-y-1">
+                {checks.map(({ label, test }) => {
+                  const passed = test(password);
+                  return (
+                    <li key={label} className={`text-xs flex items-center gap-2 ${passed ? 'text-green-600' : 'text-red-500'}`}>
+                      <span className="font-bold">{passed ? '✓' : '✗'}</span>
+                      {label}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
           </div>
 
           <div>
