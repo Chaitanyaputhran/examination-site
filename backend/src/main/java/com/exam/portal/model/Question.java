@@ -1,6 +1,8 @@
 package com.exam.portal.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -23,8 +25,13 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_id")
+    private Test test;
+
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "subject_id", nullable = false)
+    @JoinColumn(name = "subject_id", nullable = true)
     private Subject subject;
 
     @NotBlank(message = "Question text is required")
@@ -52,9 +59,9 @@ public class Question {
     @Column(name = "correct_option", nullable = false)
     private Integer correctOption;
 
-    @Min(value = 1, message = "Marks must be at least 1")
+    @DecimalMin(value = "0.01", message = "Marks must be greater than 0")
     @Column(nullable = false)
-    private Integer marks = 1;
+    private Double marks = 1.0;
 
     @Column(length = 20)
     private String difficulty = "MEDIUM"; // EASY, MEDIUM, HARD

@@ -4,15 +4,21 @@ import TestManagementComponent from '../../components/admin/TestManagementCompon
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 
+const blankQuestion = () => ({
+  questionText: '',
+  option1: '',
+  option2: '',
+  option3: '',
+  option4: '',
+  correctOption: 1,
+  difficulty: 'MEDIUM'
+});
+
 function TestManagement() {
   const [tests, setTests] = useState([]);
   const [subjects, setSubjects] = useState([]);
-  const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [showQuestionSelector, setShowQuestionSelector] = useState(false);
-  const [selectedTest, setSelectedTest] = useState(null);
-  const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -21,6 +27,7 @@ function TestManagement() {
     totalMarks: '100',
     passingMarks: '40'
   });
+  const [inlineQuestions, setInlineQuestions] = useState([blankQuestion()]);
 
   useEffect(() => {
     loadData();
@@ -28,14 +35,12 @@ function TestManagement() {
 
   const loadData = async () => {
     try {
-      const [testsRes, subjectsRes, questionsRes] = await Promise.all([
+      const [testsRes, subjectsRes] = await Promise.all([
         api.get('/admin/tests'),
-        api.get('/admin/subjects'),
-        api.get('/admin/questions')
+        api.get('/admin/subjects')
       ]);
       setTests(testsRes.data);
       setSubjects(subjectsRes.data);
-      setQuestions(questionsRes.data);
     } catch (error) {
       toast.error('Failed to load data');
     } finally {
@@ -43,59 +48,44 @@ function TestManagement() {
     }
   };
 
-  const createTest = async (payload) => {
-    const response = await api.post('/admin/tests', payload);
-    toast.success('Test created successfully');
-    return response.data;
-  };
-
-  const addQuestionsToTest = async (testId, questionIds) => {
-    await api.post(`/admin/tests/${testId}/questions`, questionIds);
-    toast.success(`${questionIds.length} questions added to test`);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (inlineQuestions.length === 0) {
+      toast.error('Please add at least one question');
+      return;
+    }
+
     try {
+      const total = parseInt(formData.totalMarks);
+      const count = inlineQuestions.length;
+      const marksPerQuestion = parseFloat((total / count).toFixed(2));
+
       const payload = {
         title: formData.title,
         description: formData.description,
-        subject: { id: parseInt(formData.subjectId) },
+        subjectId: parseInt(formData.subjectId),
         durationMinutes: parseInt(formData.durationMinutes),
-        totalMarks: parseInt(formData.totalMarks),
-        passingMarks: parseInt(formData.passingMarks)
+        totalMarks: total,
+        passingMarks: parseInt(formData.passingMarks),
+        questions: inlineQuestions.map(q => ({
+          ...q,
+          correctOption: parseInt(q.correctOption),
+          marks: marksPerQuestion
+        }))
       };
 
-      const newTest = await createTest(payload);
-      setSelectedTest(newTest);
+      await api.post('/admin/tests', payload);
+      toast.success('Test created successfully');
       setShowForm(false);
-      setShowQuestionSelector(true);
+      resetForm();
       loadData();
     } catch (error) {
       toast.error(error.response?.data || 'Failed to create test');
     }
   };
 
-  const handleAddQuestions = async () => {
-    if (selectedQuestions.length === 0) {
-      toast.error('Please select at least one question');
-      return;
-    }
-
-    try {
-      await addQuestionsToTest(selectedTest.id, selectedQuestions);
-      setShowQuestionSelector(false);
-      setSelectedQuestions([]);
-      setSelectedTest(null);
-      loadData();
-    } catch (error) {
-      toast.error('Failed to add questions');
-    }
-  };
-
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this test?')) return;
-
     try {
       await api.delete(`/admin/tests/${id}`);
       toast.success('Test deleted successfully');
@@ -105,13 +95,12 @@ function TestManagement() {
     }
   };
 
-  const handleManageQuestions = (test) => {
-    setSelectedTest(test);
-    setShowQuestionSelector(true);
-  };
-
   const handleCancel = () => {
     setShowForm(false);
+    resetForm();
+  };
+
+  const resetForm = () => {
     setFormData({
       title: '',
       description: '',
@@ -120,20 +109,21 @@ function TestManagement() {
       totalMarks: '100',
       passingMarks: '40'
     });
+    setInlineQuestions([blankQuestion()]);
   };
 
-  const toggleQuestionSelection = (questionId) => {
-    setSelectedQuestions(prev =>
-      prev.includes(questionId)
-        ? prev.filter(id => id !== questionId)
-        : [...prev, questionId]
+  const addInlineQuestion = () => {
+    setInlineQuestions(prev => [...prev, blankQuestion()]);
+  };
+
+  const removeInlineQuestion = (index) => {
+    setInlineQuestions(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateInlineQuestion = (index, field, value) => {
+    setInlineQuestions(prev =>
+      prev.map((q, i) => i === index ? { ...q, [field]: value } : q)
     );
-  };
-
-  const handleCancelQuestionSelector = () => {
-    setShowQuestionSelector(false);
-    setSelectedQuestions([]);
-    setSelectedTest(null);
   };
 
   if (loading) return <Layout role="ADMIN"><div className="p-6">Loading...</div></Layout>;
@@ -143,21 +133,22 @@ function TestManagement() {
       <TestManagementComponent
         tests={tests}
         subjects={subjects}
-        questions={questions}
         showForm={showForm}
-        showQuestionSelector={showQuestionSelector}
-        selectedTest={selectedTest}
-        selectedQuestions={selectedQuestions}
         formData={formData}
+        inlineQuestions={inlineQuestions}
         onFormDataChange={setFormData}
         onSubmit={handleSubmit}
-        onAddQuestions={handleAddQuestions}
         onDelete={handleDelete}
         onCancel={handleCancel}
-        onManageQuestions={handleManageQuestions}
-        onToggleQuestionSelection={toggleQuestionSelection}
         onShowForm={() => setShowForm(true)}
-        onCancelQuestionSelector={handleCancelQuestionSelector}
+        onAddInlineQuestion={addInlineQuestion}
+        onRemoveInlineQuestion={removeInlineQuestion}
+        onUpdateInlineQuestion={updateInlineQuestion}
+        marksPerQuestion={
+          inlineQuestions.length > 0 && formData.totalMarks
+            ? parseFloat((parseInt(formData.totalMarks) / inlineQuestions.length).toFixed(2))
+            : 0
+        }
       />
     </Layout>
   );

@@ -59,39 +59,28 @@ CREATE TABLE tests (
     INDEX idx_active (is_active)
 );
 
--- Questions table
+-- Questions table (owned by a test)
 CREATE TABLE questions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    subject_id BIGINT NOT NULL,
+    test_id BIGINT NOT NULL,
+    subject_id BIGINT,
     question_text TEXT NOT NULL,
     option1 VARCHAR(500) NOT NULL,
     option2 VARCHAR(500) NOT NULL,
     option3 VARCHAR(500) NOT NULL,
     option4 VARCHAR(500) NOT NULL,
     correct_option INT NOT NULL CHECK (correct_option BETWEEN 1 AND 4),
-    marks INT NOT NULL DEFAULT 1,
+    marks DECIMAL(5,2) NOT NULL DEFAULT 1.00,
     difficulty VARCHAR(20) DEFAULT 'MEDIUM' CHECK (difficulty IN ('EASY', 'MEDIUM', 'HARD')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_active BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE,
+    FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE,
+    FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE SET NULL,
+    INDEX idx_test (test_id),
     INDEX idx_subject (subject_id),
     INDEX idx_difficulty (difficulty),
     INDEX idx_active (is_active)
-);
-
--- Test Questions mapping (many-to-many)
-CREATE TABLE test_questions (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    test_id BIGINT NOT NULL,
-    question_id BIGINT NOT NULL,
-    question_order INT NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (test_id) REFERENCES tests(id) ON DELETE CASCADE,
-    FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_test_question (test_id, question_id),
-    INDEX idx_test (test_id),
-    INDEX idx_question (question_id)
 );
 
 -- Exam Attempts table

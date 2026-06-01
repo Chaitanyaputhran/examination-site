@@ -131,7 +131,7 @@ function PerformanceReportsComponent({ performance, subjectPerformance, attempts
                         onClick={() => onViewReport(attempt.id)}
                         className="text-blue-600 hover:text-blue-900 font-medium"
                       >
-                        📊 View Report
+                        View Report
                       </button>
                     </td>
                   </tr>
@@ -144,7 +144,7 @@ function PerformanceReportsComponent({ performance, subjectPerformance, attempts
 
       {subjectChartData.length > 0 && (
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="font-semibold text-blue-900 mb-2">📊 Statistics Summary</h3>
+          <h3 className="font-semibold text-blue-900 mb-2">Statistics Summary</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {Object.entries(subjectPerformance).map(([key, data]) => (
               <div key={key} className="bg-white rounded p-3">

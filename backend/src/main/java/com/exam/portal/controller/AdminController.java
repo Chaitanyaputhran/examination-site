@@ -1,5 +1,7 @@
 package com.exam.portal.controller;
 
+import com.exam.portal.dto.CreateTestRequest;
+import com.exam.portal.dto.QuestionDTO;
 import com.exam.portal.model.*;
 import com.exam.portal.service.*;
 import jakarta.validation.Valid;
@@ -23,9 +25,6 @@ public class AdminController {
 
     @Autowired
     private SubjectService subjectService;
-
-    @Autowired
-    private QuestionService questionService;
 
     @Autowired
     private TestService testService;
@@ -118,53 +117,8 @@ public class AdminController {
         }
     }
 
-    // Question Management
-    @GetMapping("/questions")
-    public ResponseEntity<List<Question>> getAllQuestions() {
-        return ResponseEntity.ok(questionService.getAllQuestions());
-    }
-
-    @GetMapping("/questions/{id}")
-    public ResponseEntity<?> getQuestionById(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(questionService.getQuestionById(id));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/questions/subject/{subjectId}")
-    public ResponseEntity<List<Question>> getQuestionsBySubject(@PathVariable Long subjectId) {
-        return ResponseEntity.ok(questionService.getQuestionsBySubject(subjectId));
-    }
-
-    @PostMapping("/questions")
-    public ResponseEntity<?> createQuestion(@Valid @RequestBody Question question) {
-        try {
-            return ResponseEntity.ok(questionService.createQuestion(question));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @PutMapping("/questions/{id}")
-    public ResponseEntity<?> updateQuestion(@PathVariable Long id, @RequestBody Question question) {
-        try {
-            return ResponseEntity.ok(questionService.updateQuestion(id, question));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @DeleteMapping("/questions/{id}")
-    public ResponseEntity<?> deleteQuestion(@PathVariable Long id) {
-        try {
-            questionService.deleteQuestion(id);
-            return ResponseEntity.ok("Question deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+    // Question Management (questions are managed per-test, not globally)
+    // No standalone /admin/questions endpoints
 
     // Test Management
     @GetMapping("/tests")
@@ -182,11 +136,11 @@ public class AdminController {
     }
 
     @PostMapping("/tests")
-    public ResponseEntity<?> createTest(@Valid @RequestBody Test test, Authentication authentication) {
+    public ResponseEntity<?> createTest(@RequestBody CreateTestRequest request, Authentication authentication) {
         try {
             String username = authentication.getName();
             User admin = userService.getUserByUsername(username);
-            return ResponseEntity.ok(testService.createTest(test, admin.getId()));
+            return ResponseEntity.ok(testService.createTest(request, admin.getId()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -211,10 +165,10 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/tests/{testId}/questions/{questionId}")
-    public ResponseEntity<?> addQuestionToTest(@PathVariable Long testId, @PathVariable Long questionId) {
+    @PostMapping("/tests/{testId}/questions")
+    public ResponseEntity<?> addQuestionToTest(@PathVariable Long testId, @RequestBody QuestionDTO questionDTO) {
         try {
-            return ResponseEntity.ok(testService.addQuestionToTest(testId, questionId));
+            return ResponseEntity.ok(testService.addQuestionToTest(testId, questionDTO));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -224,15 +178,6 @@ public class AdminController {
     public ResponseEntity<?> removeQuestionFromTest(@PathVariable Long testId, @PathVariable Long questionId) {
         try {
             return ResponseEntity.ok(testService.removeQuestionFromTest(testId, questionId));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/tests/{testId}/questions")
-    public ResponseEntity<?> addMultipleQuestions(@PathVariable Long testId, @RequestBody List<Long> questionIds) {
-        try {
-            return ResponseEntity.ok(testService.addMultipleQuestionsToTest(testId, questionIds));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

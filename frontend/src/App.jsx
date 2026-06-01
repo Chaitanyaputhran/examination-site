@@ -9,7 +9,6 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserManagement from './pages/admin/UserManagement';
 import SubjectManagement from './pages/admin/SubjectManagement';
-import QuestionManagement from './pages/admin/QuestionManagement';
 import TestManagement from './pages/admin/TestManagement';
 import AdminReports from './pages/admin/AdminReports';
 
@@ -89,14 +88,6 @@ function App() {
           element={
             <PrivateRoute role="ADMIN">
               <SubjectManagement />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin/questions"
-          element={
-            <PrivateRoute role="ADMIN">
-              <QuestionManagement />
             </PrivateRoute>
           }
         />

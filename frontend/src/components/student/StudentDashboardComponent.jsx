@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const StatCard = ({ title, value, icon, color, subtitle }) => (
+const StatCard = ({ title, value, color, subtitle }) => (
   <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${color}`}>
     <div className="flex items-center justify-between">
       <div>
@@ -9,7 +9,6 @@ const StatCard = ({ title, value, icon, color, subtitle }) => (
         <p className="text-3xl font-bold text-gray-800 mt-2">{value}</p>
         {subtitle && <p className="text-xs text-gray-500 mt-1">{subtitle}</p>}
       </div>
-      <div className="text-4xl">{icon}</div>
     </div>
   </div>
 );
@@ -23,38 +22,32 @@ function StudentDashboardComponent({ stats, tests }) {
         <StatCard
           title="Total Attempts"
           value={stats.totalAttempts}
-          icon="📝"
           color="border-blue-500"
         />
         <StatCard
           title="Average Score"
           value={stats.averageScore ? stats.averageScore.toFixed(1) : '0.0'}
-          icon="📊"
           color="border-green-500"
           subtitle="across all tests"
         />
         <StatCard
           title="Highest Score"
           value={stats.highestScore ? stats.highestScore.toFixed(1) : '0.0'}
-          icon="🏆"
           color="border-yellow-500"
         />
         <StatCard
           title="Lowest Score"
           value={stats.lowestScore ? stats.lowestScore.toFixed(1) : '0.0'}
-          icon="📉"
           color="border-red-500"
         />
         <StatCard
           title="Tests Passed"
           value={stats.passedCount}
-          icon="✅"
           color="border-green-500"
         />
         <StatCard
           title="Tests Failed"
           value={stats.failedCount}
-          icon="❌"
           color="border-red-500"
         />
       </div>
@@ -67,7 +60,7 @@ function StudentDashboardComponent({ stats, tests }) {
               to="/student/tests"
               className="block p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition"
             >
-              <p className="font-semibold text-blue-700">📝 Take a Test</p>
+              <p className="font-semibold text-blue-700">Take a Test</p>
               <p className="text-sm text-gray-600 mt-1">
                 {tests.length} tests available
               </p>
@@ -76,7 +69,7 @@ function StudentDashboardComponent({ stats, tests }) {
               to="/student/performance"
               className="block p-4 bg-green-50 rounded-lg hover:bg-green-100 transition"
             >
-              <p className="font-semibold text-green-700">📈 View Performance</p>
+              <p className="font-semibold text-green-700">View Performance</p>
               <p className="text-sm text-gray-600 mt-1">
                 See detailed analytics and graphs
               </p>
@@ -124,7 +117,7 @@ function StudentDashboardComponent({ stats, tests }) {
 
       {stats.totalAttempts === 0 && (
         <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-          <div className="text-5xl mb-4">🎯</div>
+          <div className="text-5xl mb-4"></div>
           <h3 className="text-xl font-bold text-blue-900 mb-2">
             Ready to start your journey?
           </h3>

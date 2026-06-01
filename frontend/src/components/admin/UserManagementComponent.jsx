@@ -75,7 +75,7 @@ function UserManagementComponent({ users, roleFilter, onRoleFilterChange, onDele
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {user.isActive ? '✅' : '❌'}
+                    {user.isActive ? 'Yes' : 'No'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button

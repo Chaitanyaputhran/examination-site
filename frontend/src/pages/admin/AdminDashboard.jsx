@@ -18,20 +18,20 @@ function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      const [users, subjects, questions, tests] = await Promise.all([
+      const [users, subjects, tests] = await Promise.all([
         api.get('/admin/users'),
         api.get('/admin/subjects'),
-        api.get('/admin/questions'),
         api.get('/admin/tests'),
       ]);
 
       const students = users.data.filter(u => u.role === 'STUDENT');
+      const totalQuestions = tests.data.reduce((sum, t) => sum + (t.questionCount ?? 0), 0);
 
       setStats({
         totalUsers: users.data.length,
         totalStudents: students.length,
         totalSubjects: subjects.data.length,
-        totalQuestions: questions.data.length,
+        totalQuestions,
         totalTests: tests.data.length,
       });
     } catch (error) {

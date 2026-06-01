@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -83,7 +82,7 @@ public class StudentController {
     public ResponseEntity<?> getExamQuestions(@PathVariable Long attemptId) {
         try {
             ExamAttempt attempt = examService.getAttemptById(attemptId);
-            Set<Question> questions = attempt.getTest().getQuestions();
+            List<Question> questions = attempt.getTest().getQuestions();
 
             List<Map<String, Object>> questionList = questions.stream().map(q -> {
                 Map<String, Object> qMap = Map.of(

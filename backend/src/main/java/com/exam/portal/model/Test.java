@@ -1,5 +1,6 @@
 package com.exam.portal.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -11,8 +12,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tests")
@@ -58,14 +59,9 @@ public class Test {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "test_questions",
-        joinColumns = @JoinColumn(name = "test_id"),
-        inverseJoinColumns = @JoinColumn(name = "question_id")
-    )
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Set<Question> questions = new HashSet<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Question> questions = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

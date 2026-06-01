@@ -93,12 +93,12 @@ function TestReportComponent({
             >
               {sendingEmail ? (
                 <>
-                  <span className="animate-spin">⏳</span>
+                  <span className="animate-spin">...</span>
                   Sending...
                 </>
               ) : (
                 <>
-                  📧 Email Results
+                  Email Results
                 </>
               )}
             </button>
@@ -110,7 +110,7 @@ function TestReportComponent({
 
           <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-900">
-              <strong>ℹ️ Marks Distribution:</strong> Each question is worth{' '}
+              <strong>Marks Distribution:</strong> Each question is worth{' '}
               <strong>{marksPerQuestion.toFixed(2)} marks</strong> (Total: {attempt.test.totalMarks} marks ÷ {attempt.totalQuestions} questions)
             </p>
           </div>
@@ -227,7 +227,7 @@ function TestReportComponent({
               </p>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 w-full">
                 <p className="text-sm text-blue-900">
-                  📋 The email includes:
+                  The email includes:
                 </p>
                 <ul className="text-sm text-blue-800 mt-2 space-y-1 ml-4">
                   <li>• Complete score breakdown</li>

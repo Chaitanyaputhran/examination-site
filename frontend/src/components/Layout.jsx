@@ -27,7 +27,6 @@ function Layout({ children, role = 'STUDENT' }) {
     { to: '/admin/dashboard', label: 'Dashboard' },
     { to: '/admin/users', label: 'Users' },
     { to: '/admin/subjects', label: 'Subjects' },
-    { to: '/admin/questions', label: 'Questions' },
     { to: '/admin/tests', label: 'Tests' },
     { to: '/admin/reports', label: 'Reports' },
     { to: '/admin/profile', label: 'Profile' },

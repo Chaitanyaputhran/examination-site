@@ -95,7 +95,7 @@ function SubjectManagementComponent({
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{subject.name}</td>
                   <td className="px-6 py-4 text-sm">{subject.description || '-'}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    {subject.isActive ? '✅' : '❌'}
+                    {subject.isActive ? 'Yes' : 'No'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                     <button

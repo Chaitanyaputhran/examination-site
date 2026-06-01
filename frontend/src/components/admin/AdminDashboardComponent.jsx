@@ -1,13 +1,12 @@
 import React from 'react';
 
-const StatCard = ({ title, value, icon, color }) => (
+const StatCard = ({ title, value, color }) => (
   <div className={`bg-white rounded-lg shadow-md p-6 border-l-4 ${color}`}>
     <div className="flex items-center justify-between">
       <div>
         <p className="text-gray-600 text-sm font-medium">{title}</p>
         <p className="text-3xl font-bold text-gray-800 mt-2">{value}</p>
       </div>
-      <div className="text-4xl">{icon}</div>
     </div>
   </div>
 );
@@ -21,31 +20,31 @@ function AdminDashboardComponent({ stats }) {
         <StatCard
           title="Total Users"
           value={stats.totalUsers}
-          icon="👥"
+          icon="Users"
           color="border-blue-500"
         />
         <StatCard
           title="Total Students"
           value={stats.totalStudents}
-          icon="🎓"
+          icon="Students"
           color="border-green-500"
         />
         <StatCard
           title="Subjects"
           value={stats.totalSubjects}
-          icon="📚"
+          icon="Subjects"
           color="border-purple-500"
         />
         <StatCard
           title="Questions"
           value={stats.totalQuestions}
-          icon="❓"
+          icon="Questions"
           color="border-yellow-500"
         />
         <StatCard
           title="Tests"
           value={stats.totalTests}
-          icon="📝"
+          icon="Tests"
           color="border-red-500"
         />
       </div>

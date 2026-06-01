@@ -3,46 +3,40 @@ import React from 'react';
 function TestManagementComponent({
   tests,
   subjects,
-  questions,
   showForm,
-  showQuestionSelector,
-  selectedTest,
-  selectedQuestions,
   formData,
+  inlineQuestions,
+  marksPerQuestion,
   onFormDataChange,
   onSubmit,
-  onAddQuestions,
   onDelete,
   onCancel,
-  onManageQuestions,
-  onToggleQuestionSelection,
   onShowForm,
-  onCancelQuestionSelector
+  onAddInlineQuestion,
+  onRemoveInlineQuestion,
+  onUpdateInlineQuestion
 }) {
-  const filteredQuestions = selectedTest
-    ? questions.filter(q => q.subject.id === selectedTest.subject.id)
-    : questions;
-
   return (
     <div className="px-4 py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Test Management</h1>
-        <button
-          onClick={onShowForm}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-        >
-          + Create Test
-        </button>
+        {!showForm && (
+          <button
+            onClick={onShowForm}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          >
+            + Create Test
+          </button>
+        )}
       </div>
 
       {showForm && (
         <div className="mb-6 bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-bold mb-4">Create New Test</h2>
           <form onSubmit={onSubmit} className="space-y-4">
+            {/* Test metadata */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Test Title *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Test Title *</label>
               <input
                 type="text"
                 value={formData.title}
@@ -53,9 +47,7 @@ function TestManagementComponent({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => onFormDataChange({ ...formData, description: e.target.value })}
@@ -65,9 +57,7 @@ function TestManagementComponent({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Subject *
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
               <select
                 value={formData.subjectId}
                 onChange={(e) => onFormDataChange({ ...formData, subjectId: e.target.value })}
@@ -75,19 +65,15 @@ function TestManagementComponent({
                 required
               >
                 <option value="">Select Subject</option>
-                {subjects.map((subject) => (
-                  <option key={subject.id} value={subject.id}>
-                    {subject.name}
-                  </option>
+                {subjects.map((s) => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
               </select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Duration (minutes) *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Duration (minutes) *</label>
                 <input
                   type="number"
                   min="1"
@@ -98,9 +84,7 @@ function TestManagementComponent({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Total Marks *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Total Marks *</label>
                 <input
                   type="number"
                   min="1"
@@ -109,14 +93,9 @@ function TestManagementComponent({
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Will be distributed equally among questions
-                </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Passing Marks *
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Passing Marks *</label>
                 <input
                   type="number"
                   min="0"
@@ -128,20 +107,115 @@ function TestManagementComponent({
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-sm text-blue-900">
-                <strong>ℹ️ Marks Distribution:</strong> The total marks you set ({formData.totalMarks}) will be
-                automatically divided equally among all questions you add to this test.
-                For example: {formData.totalMarks} marks ÷ 10 questions = {(parseFloat(formData.totalMarks) / 10).toFixed(2)} marks per question.
-              </p>
+            {/* Inline question builder */}
+            <div className="mt-6">
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Questions ({inlineQuestions.length})
+                </h3>
+                <button
+                  type="button"
+                  onClick={onAddInlineQuestion}
+                  className="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+                >
+                  + Add Question
+                </button>
+              </div>
+
+              {formData.totalMarks && inlineQuestions.length > 0 && (
+                <div className="mb-3 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
+                  {formData.totalMarks} marks ÷ {inlineQuestions.length} question{inlineQuestions.length !== 1 ? 's' : ''} = <strong>{marksPerQuestion} marks each</strong>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {inlineQuestions.map((q, index) => (
+                  <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="font-medium text-gray-700">Question {index + 1}</span>
+                      {inlineQuestions.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => onRemoveInlineQuestion(index)}
+                          className="text-red-500 hover:text-red-700 text-sm"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1">Question Text *</label>
+                        <textarea
+                          value={q.questionText}
+                          onChange={(e) => onUpdateInlineQuestion(index, 'questionText', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                          rows="2"
+                          required
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {['option1', 'option2', 'option3', 'option4'].map((opt, i) => (
+                          <div key={opt}>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Option {i + 1} *</label>
+                            <input
+                              type="text"
+                              value={q[opt]}
+                              onChange={(e) => onUpdateInlineQuestion(index, opt, e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                              required
+                            />
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Correct Option *</label>
+                          <select
+                            value={q.correctOption}
+                            onChange={(e) => onUpdateInlineQuestion(index, 'correctOption', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value={1}>Option 1</option>
+                            <option value={2}>Option 2</option>
+                            <option value={3}>Option 3</option>
+                            <option value={4}>Option 4</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Marks</label>
+                          <div className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-100 text-gray-700">
+                            {marksPerQuestion}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Difficulty</label>
+                          <select
+                            value={q.difficulty}
+                            onChange={(e) => onUpdateInlineQuestion(index, 'difficulty', e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="EASY">Easy</option>
+                            <option value="MEDIUM">Medium</option>
+                            <option value="HARD">Hard</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 pt-2">
               <button
                 type="submit"
                 className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
               >
-                Create & Add Questions
+                Create Test ({inlineQuestions.length} question{inlineQuestions.length !== 1 ? 's' : ''})
               </button>
               <button
                 type="button"
@@ -155,68 +229,7 @@ function TestManagementComponent({
         </div>
       )}
 
-      {showQuestionSelector && selectedTest && (
-        <div className="mb-6 bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-bold mb-4">
-            Add Questions to: {selectedTest.title}
-          </h2>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-            <p className="text-sm text-green-900">
-              <strong>📊 Marks Calculation:</strong> Total Test Marks: {selectedTest.totalMarks} marks
-              {selectedQuestions.length > 0 && (
-                <span> → Each question will be worth <strong>{(selectedTest.totalMarks / selectedQuestions.length).toFixed(2)} marks</strong> ({selectedQuestions.length} questions selected)</span>
-              )}
-            </p>
-          </div>
-          <p className="text-sm text-gray-600 mb-4">
-            Subject: {selectedTest.subject.name} | Selected: {selectedQuestions.length} questions
-          </p>
-
-          <div className="max-h-96 overflow-y-auto space-y-2 mb-4">
-            {filteredQuestions.length === 0 ? (
-              <p className="text-gray-500">No questions available for this subject.</p>
-            ) : (
-              filteredQuestions.map((question) => (
-                <div
-                  key={question.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
-                >
-                  <label className="flex items-start cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={selectedQuestions.includes(question.id)}
-                      onChange={() => onToggleQuestionSelection(question.id)}
-                      className="mt-1 mr-3"
-                    />
-                    <div className="flex-1">
-                      <p className="font-medium">{question.questionText}</p>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Marks: {question.marks} | Difficulty: {question.difficulty}
-                      </p>
-                    </div>
-                  </label>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div className="flex gap-4">
-            <button
-              onClick={onAddQuestions}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            >
-              Add {selectedQuestions.length} Questions
-            </button>
-            <button
-              onClick={onCancelQuestionSelector}
-              className="px-6 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
+      {/* Tests table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -226,14 +239,13 @@ function TestManagementComponent({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Duration</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Marks</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Questions</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Marks/Q</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {tests.length === 0 ? (
               <tr>
-                <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
+                <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
                   No tests found. Click "Create Test" to add one.
                 </td>
               </tr>
@@ -241,22 +253,11 @@ function TestManagementComponent({
               tests.map((test) => (
                 <tr key={test.id}>
                   <td className="px-6 py-4 text-sm font-medium">{test.title}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{test.subject.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{test.subject?.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">{test.durationMinutes} min</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold">{test.totalMarks}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">{test.questions?.length || 0}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-medium">
-                    {test.questions?.length > 0
-                      ? (test.totalMarks / test.questions.length).toFixed(2)
-                      : '-'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                    <button
-                      onClick={() => onManageQuestions(test)}
-                      className="text-green-600 hover:text-green-900"
-                    >
-                      Add Questions
-                    </button>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">{test.questionCount ?? 0}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
                       onClick={() => onDelete(test.id)}
                       className="text-red-600 hover:text-red-900"

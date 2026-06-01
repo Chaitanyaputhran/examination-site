@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 
 function AvailableTests() {
   const [tests, setTests] = useState([]);
+  const [completedTestIds, setCompletedTestIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -16,8 +17,13 @@ function AvailableTests() {
 
   const loadTests = async () => {
     try {
-      const response = await api.get('/student/tests');
-      setTests(response.data);
+      const [testsRes, attemptsRes] = await Promise.all([
+        api.get('/student/tests'),
+        api.get('/student/exams/attempts')
+      ]);
+      setTests(testsRes.data);
+      const ids = new Set(attemptsRes.data.map(a => a.test.id));
+      setCompletedTestIds(ids);
     } catch (error) {
       toast.error('Failed to load tests');
     } finally {
@@ -47,7 +53,7 @@ function AvailableTests() {
 
   return (
     <Layout role="STUDENT">
-      <AvailableTestsComponent tests={tests} onStartTest={handleStartTest} />
+      <AvailableTestsComponent tests={tests} completedTestIds={completedTestIds} onStartTest={handleStartTest} />
     </Layout>
   );
 }
