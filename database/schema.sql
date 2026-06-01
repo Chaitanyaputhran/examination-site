@@ -1,4 +1,7 @@
 -- Examination Portal Database Schema
+CREATE DATABASE IF NOT EXISTS examination_portal;
+USE examination_portal;
+
 -- Drop existing tables if they exist
 DROP TABLE IF EXISTS student_answers;
 DROP TABLE IF EXISTS exam_attempts;
@@ -129,39 +132,3 @@ CREATE TABLE student_answers (
     INDEX idx_question (question_id)
 );
 
--- Insert sample data for testing
--- Default Admin User (password: admin123)
-INSERT INTO users (username, email, password, role, first_name, last_name)
-VALUES ('admin', 'admin@exam.com', '$2a$10$xqJDlLrQXkx8h2rX9kW0JuO0LPKKZzGDa.gSh5H2TqXlV3eBPrI.K', 'ADMIN', 'System', 'Admin');
-
--- Sample Subjects
-INSERT INTO subjects (name, description) VALUES
-('Java Programming', 'Core Java concepts and advanced topics'),
-('Data Structures', 'Arrays, Lists, Trees, Graphs, Algorithms'),
-('Database Management', 'SQL, MySQL, Database Design'),
-('Web Development', 'HTML, CSS, JavaScript, React'),
-('Python Programming', 'Python basics and advanced concepts');
-
--- Sample Questions for Java
-INSERT INTO questions (subject_id, question_text, option1, option2, option3, option4, correct_option, marks, difficulty) VALUES
-(1, 'What is the size of int in Java?', '8 bits', '16 bits', '32 bits', '64 bits', 3, 1, 'EASY'),
-(1, 'Which keyword is used to inherit a class in Java?', 'implements', 'extends', 'inherits', 'super', 2, 1, 'EASY'),
-(1, 'What is the default value of boolean variable?', 'true', 'false', 'null', '0', 2, 1, 'EASY'),
-(1, 'Which collection class allows you to grow or shrink its size?', 'Array', 'ArrayList', 'HashSet', 'HashMap', 2, 1, 'MEDIUM'),
-(1, 'What is the return type of hashCode() method?', 'Object', 'int', 'long', 'void', 2, 1, 'MEDIUM');
-
--- Sample Questions for Data Structures
-INSERT INTO questions (subject_id, question_text, option1, option2, option3, option4, correct_option, marks, difficulty) VALUES
-(2, 'What is the time complexity of binary search?', 'O(n)', 'O(log n)', 'O(n²)', 'O(1)', 2, 1, 'MEDIUM'),
-(2, 'Which data structure uses LIFO?', 'Queue', 'Stack', 'Array', 'Tree', 2, 1, 'EASY'),
-(2, 'What is the best case time complexity of Quick Sort?', 'O(n)', 'O(n log n)', 'O(n²)', 'O(log n)', 2, 1, 'HARD'),
-(2, 'Which traversal technique uses queue?', 'Inorder', 'Preorder', 'Postorder', 'Level Order', 4, 1, 'MEDIUM'),
-(2, 'What is the space complexity of merge sort?', 'O(1)', 'O(log n)', 'O(n)', 'O(n²)', 3, 1, 'MEDIUM');
-
--- Sample Questions for Database
-INSERT INTO questions (subject_id, question_text, option1, option2, option3, option4, correct_option, marks, difficulty) VALUES
-(3, 'What does SQL stand for?', 'Structured Query Language', 'Simple Query Language', 'Standard Query Language', 'Structured Question Language', 1, 1, 'EASY'),
-(3, 'Which command is used to retrieve data from database?', 'GET', 'SELECT', 'FETCH', 'RETRIEVE', 2, 1, 'EASY'),
-(3, 'What is a primary key?', 'Foreign key reference', 'Unique identifier', 'Index field', 'Nullable field', 2, 1, 'EASY'),
-(3, 'Which SQL clause is used to filter records?', 'FILTER', 'WHERE', 'HAVING', 'SELECT', 2, 1, 'MEDIUM'),
-(3, 'What is normalization in DBMS?', 'Data encryption', 'Organizing data to reduce redundancy', 'Data backup', 'Query optimization', 2, 1, 'MEDIUM');
