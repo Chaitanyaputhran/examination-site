@@ -30,6 +30,12 @@ function AdminDashboardComponent({ stats }) {
           color="border-green-500"
         />
         <StatCard
+          title="Total Admins"
+          value={stats.totalAdmins}
+          icon="Admins"
+          color="border-indigo-500"
+        />
+        <StatCard
           title="Subjects"
           value={stats.totalSubjects}
           icon="Subjects"

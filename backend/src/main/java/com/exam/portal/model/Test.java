@@ -1,5 +1,6 @@
 package com.exam.portal.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -50,12 +51,14 @@ public class Test {
 
     @ManyToOne
     @JoinColumn(name = "created_by", nullable = false)
+    @JsonIgnoreProperties({"password", "createdAt", "updatedAt"})
     private User createdBy;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
 
     @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"test", "subject", "createdAt", "updatedAt"})
     private List<Question> questions = new ArrayList<>();
 
     @CreationTimestamp

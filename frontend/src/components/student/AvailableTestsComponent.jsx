@@ -51,13 +51,11 @@ function AvailableTestsComponent({ tests, completedTestIds, onStartTest }) {
                       {test.subject.name}
                     </p>
                   </div>
-                  <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                    completedTestIds.has(test.id)
-                      ? 'bg-gray-100 text-gray-600'
-                      : 'bg-green-100 text-green-800'
-                  }`}>
-                    {completedTestIds.has(test.id) ? 'Completed' : 'Active'}
-                  </span>
+                  {completedTestIds.has(test.id) && (
+                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-600">
+                      Previously Attempted
+                    </span>
+                  )}
                 </div>
 
                 {test.description && (
@@ -85,18 +83,12 @@ function AvailableTestsComponent({ tests, completedTestIds, onStartTest }) {
                   </div>
                 </div>
 
-                {completedTestIds.has(test.id) ? (
-                  <div className="w-full px-4 py-3 bg-gray-100 text-gray-500 font-semibold rounded-lg text-center">
-                    Already Attempted
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => handleStartClick(test)}
-                    className="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200"
-                  >
-                    Start Test
-                  </button>
-                )}
+                <button
+                  onClick={() => handleStartClick(test)}
+                  className="w-full px-4 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200"
+                >
+                  {completedTestIds.has(test.id) ? 'Retake Test' : 'Start Test'}
+                </button>
               </div>
             </div>
           ))}

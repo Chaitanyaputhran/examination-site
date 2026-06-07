@@ -7,6 +7,7 @@ function AdminDashboard() {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalStudents: 0,
+    totalAdmins: 0,
     totalSubjects: 0,
     totalQuestions: 0,
     totalTests: 0,
@@ -25,11 +26,13 @@ function AdminDashboard() {
       ]);
 
       const students = users.data.filter(u => u.role === 'STUDENT');
+      const admins = users.data.filter(u => u.role === 'ADMIN');
       const totalQuestions = tests.data.reduce((sum, t) => sum + (t.questionCount ?? 0), 0);
 
       setStats({
         totalUsers: users.data.length,
         totalStudents: students.length,
+        totalAdmins: admins.length,
         totalSubjects: subjects.data.length,
         totalQuestions,
         totalTests: tests.data.length,

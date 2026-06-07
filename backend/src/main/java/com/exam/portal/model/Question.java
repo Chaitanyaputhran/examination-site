@@ -1,5 +1,6 @@
 package com.exam.portal.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
@@ -26,10 +27,12 @@ public class Question {
 
     @ManyToOne
     @JoinColumn(name = "test_id")
+    @JsonIgnoreProperties({"questions", "createdBy", "createdAt", "updatedAt"})
     private Test test;
 
     @ManyToOne
     @JoinColumn(name = "subject_id", nullable = true)
+    @JsonIgnoreProperties({"createdAt", "updatedAt"})
     private Subject subject;
 
     @NotBlank(message = "Question text is required")
