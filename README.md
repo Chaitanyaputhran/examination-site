@@ -309,39 +309,4 @@ npm run build
 # Deploy dist/ folder to web server (Nginx, Apache, etc.)
 ```
 
-### Environment Variables
-- Set production database credentials
-- Update JWT secret key
-- Configure CORS for production domain
-- Set up SSL certificate
 
-## 📝 Recent Updates
-
-### v1.1.0
-- ✨ Added unlimited test retakes for students
-- 📊 Added total admins count to dashboard
-- 🐛 Fixed JSON serialization circular reference bug
-- 🎨 Improved UI/UX for test management
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 👨‍💻 Author
-
-**Chaitanya Puthran**
-- GitHub: [@Chaitanyaputhran](https://github.com/Chaitanyaputhran)
-
-## 🙏 Acknowledgments
-
-- Spring Boot team for the amazing framework
-- React team for the powerful UI library
-- All contributors and users of this project
-
----
-
-⭐ **Star this repository if you find it helpful!**
